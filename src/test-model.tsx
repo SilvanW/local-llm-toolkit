@@ -7,6 +7,7 @@ type Values = {
   port: string;
   modelname: string;
   dropdown: string;
+  prompt: string;
 };
 
 export default function Command() {
@@ -27,7 +28,7 @@ export default function Command() {
       messages: [
         {
           role: "user",
-          content: "What is the capital of France?",
+          content: values.prompt,
         },
       ],
     };
@@ -71,6 +72,9 @@ export default function Command() {
         </ActionPanel>
       }
     >
+      <Form.Dropdown id="dropdown" title="Model Provider" storeValue={true}>
+        <Form.Dropdown.Item value="openai" title="OpenAI" />
+      </Form.Dropdown>
       <Form.TextField
         id="url"
         title="Base URL"
@@ -86,9 +90,13 @@ export default function Command() {
         defaultValue="qwen/qwen3-1.7b"
         storeValue={true}
       />
-      <Form.Dropdown id="dropdown" title="Model Provider" storeValue={true}>
-        <Form.Dropdown.Item value="openai" title="OpenAI" />
-      </Form.Dropdown>
+      <Form.TextField
+        id="prompt"
+        title="Prompt"
+        placeholder="Enter your prompt here"
+        defaultValue="Are you there?"
+        storeValue={true}
+      />
     </Form>
   );
 }
