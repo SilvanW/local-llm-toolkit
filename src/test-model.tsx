@@ -41,7 +41,6 @@ export default function Command() {
         body: JSON.stringify(body),
       });
       const data = await response.json();
-
       setResult(extractNonThinkingMessage(data["choices"]?.[0]?.message?.content || "No response"));
     } catch (error: any) {
       setResult(`Error: ${error.message}`);
@@ -72,10 +71,22 @@ export default function Command() {
         </ActionPanel>
       }
     >
-      <Form.TextField id="url" title="Base URL" placeholder="http://localhost" defaultValue="http://localhost" />
-      <Form.TextField id="port" title="Port" placeholder="1234" defaultValue="1234" />
-      <Form.TextField id="modelname" title="Model Name" placeholder="Enter model name" defaultValue="qwen/qwen3-1.7b" />
-      <Form.Dropdown id="dropdown" title="Model Provider">
+      <Form.TextField
+        id="url"
+        title="Base URL"
+        placeholder="http://localhost"
+        defaultValue="http://localhost"
+        storeValue={true}
+      />
+      <Form.TextField id="port" title="Port" placeholder="1234" defaultValue="1234" storeValue={true} />
+      <Form.TextField
+        id="modelname"
+        title="Model Name"
+        placeholder="Enter model name"
+        defaultValue="qwen/qwen3-1.7b"
+        storeValue={true}
+      />
+      <Form.Dropdown id="dropdown" title="Model Provider" storeValue={true}>
         <Form.Dropdown.Item value="openai" title="OpenAI" />
       </Form.Dropdown>
     </Form>
