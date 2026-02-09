@@ -15,9 +15,9 @@
   "license": "MIT",
   "commands": [
     {
-      "name": "test-endpoint",
-      "title": "Test Endpoint",
-      "subtitle": "Test a local LLM Endpoint",
+      "name": "test-model",
+      "title": "Test Model",
+      "subtitle": "Test a local LLM",
       "description": "",
       "mode": "view"
     }
