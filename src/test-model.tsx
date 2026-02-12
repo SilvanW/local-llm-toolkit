@@ -1,11 +1,11 @@
 import { Form, ActionPanel, Action, showToast, Detail } from "@raycast/api";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { extractNonThinkingMessage } from "./parser";
 
 type Values = {
   url: string;
   port: string;
-  modelname: string;
+  model: string;
   dropdown: string;
   prompt: string;
 };
@@ -14,6 +14,26 @@ export default function Command() {
   const [submitted, setSubmitted] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Track url and port for model fetching
+  const [url, setUrl] = useState("http://localhost");
+  const [port, setPort] = useState("1234");
+  const [models, setModels] = useState<string[]>([]);
+
+  // Fetch models when url or port changes
+  useEffect(() => {
+    async function fetchModels() {
+      try {
+        const endpoint = `${url}:${port}/v1/models`;
+        const response = await fetch(endpoint);
+        const data = await response.json();
+        setModels(data.data?.map((m: any) => m.id) || []);
+      } catch {
+        setModels([]);
+      }
+    }
+    fetchModels();
+  }, [url, port]);
 
   async function handleSubmit(values: Values) {
     setSubmitted(true);
@@ -24,7 +44,7 @@ export default function Command() {
     const endpoint = `${values.url}:${values.port}/v1/chat/completions`;
 
     const body = {
-      model: values.modelname,
+      model: values.model,
       messages: [
         {
           role: "user",
@@ -79,17 +99,20 @@ export default function Command() {
         id="url"
         title="Base URL"
         placeholder="http://localhost"
-        defaultValue="http://localhost"
+        defaultValue={url}
         storeValue={true}
+        onChange={setUrl}
       />
-      <Form.TextField id="port" title="Port" placeholder="1234" defaultValue="1234" storeValue={true} />
-      <Form.TextField
-        id="modelname"
-        title="Model Name"
-        placeholder="Enter model name"
-        defaultValue="qwen/qwen3-1.7b"
-        storeValue={true}
-      />
+      <Form.TextField id="port" title="Port" placeholder="1234" defaultValue={port} storeValue={true} onChange={setPort}/>
+      <Form.Dropdown id="model" title="Model" storeValue={true}>
+{models.length === 0 ? (
+          <Form.Dropdown.Item value="" title="No models found" />
+        ) : (
+          models.map((model) => (
+            <Form.Dropdown.Item key={model} value={model} title={model} />
+          ))
+        )}
+      </Form.Dropdown>
       <Form.TextField
         id="prompt"
         title="Prompt"
