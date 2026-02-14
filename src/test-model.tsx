@@ -20,6 +20,11 @@ export default function Command() {
   const [port, setPort] = useState("1234");
   const [models, setModels] = useState<string[]>([]);
 
+  // Validation
+  const [urlError, setUrlError] = useState<string | undefined>();
+  const [portError, setPortError] = useState<string | undefined>();
+  const [modelError, setModelError] = useState<string | undefined>();
+
   // Fetch models when url or port changes
   useEffect(() => {
     async function fetchModels() {
@@ -102,15 +107,50 @@ export default function Command() {
         defaultValue={url}
         storeValue={true}
         onChange={setUrl}
+        error={urlError}
+        onBlur={(event) => {
+          if (event.target.value?.length == 0) {
+            setUrlError("URL cannot be empty");
+          } else {
+            setUrlError(undefined);
+          }
+        }}
       />
-      <Form.TextField id="port" title="Port" placeholder="1234" defaultValue={port} storeValue={true} onChange={setPort}/>
-      <Form.Dropdown id="model" title="Model" storeValue={true}>
-{models.length === 0 ? (
+      <Form.TextField
+        id="port"
+        title="Port"
+        placeholder="1234"
+        defaultValue={port}
+        storeValue={true}
+        onChange={setPort}
+        error={portError}
+        onBlur={(event) => {
+          if (event.target.value?.length == 0) {
+            setPortError("Port cannot be empty");
+          } else if (isNaN(Number(event.target.value))) {
+            setPortError("Port must be a number");
+          } else {
+            setPortError(undefined);
+          }
+        }}
+      />
+      <Form.Dropdown
+        id="model"
+        title="Model"
+        storeValue={true}
+        error={modelError}
+        onBlur={(event) => {
+          if (event.target.value === "") {
+            setModelError("Please select a model");
+          } else {
+            setModelError(undefined);
+          }
+        }}
+      >
+        {models.length === 0 ? (
           <Form.Dropdown.Item value="" title="No models found" />
         ) : (
-          models.map((model) => (
-            <Form.Dropdown.Item key={model} value={model} title={model} />
-          ))
+          models.map((model) => <Form.Dropdown.Item key={model} value={model} title={model} />)
         )}
       </Form.Dropdown>
       <Form.TextField
